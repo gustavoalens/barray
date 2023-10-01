@@ -49,7 +49,7 @@ class BArrayTests: XCTestCase {
     
     func testSearchPerformance() throws {
         let (data, refValues) = getPerfomanceData()
-        self.measure {
+        self.measure { // avg: 0.021 seconds
             for refValue in refValues {
                 _ = data.bArray[refValue]
             }
@@ -58,7 +58,7 @@ class BArrayTests: XCTestCase {
     
     func testPerfomanceComparable() throws {
         let (data, refValues) = getPerfomanceData()
-        self.measure {
+        self.measure { // avg: 0.092
             for refValue in refValues {
                 for value in data.refValues {
                     if value == refValue {

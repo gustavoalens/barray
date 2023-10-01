@@ -7,6 +7,12 @@ public class BArray<BData: BArrayData> {
         storedData = initialValues
     }
     
+    public init (unsorted values: [BData]) {
+        storedData = values.sorted(by: { first, last in
+            return first.id < last.id
+        })
+    }
+    
     public subscript(id: BData.Comp) -> BData? {
         get { getItem(byID: id) }
         
@@ -20,7 +26,7 @@ public class BArray<BData: BArrayData> {
         }
     }
     
-    func insert(_ newItem: BData) {
+    public func insert(_ newItem: BData) {
         let (index, updateItem) = getNextIndex(byReference: newItem.id)
         guard !updateItem else {
             storedData[index] = newItem
@@ -29,22 +35,22 @@ public class BArray<BData: BArrayData> {
         storedData.insertOrAppend(newItem, at: index)
     }
     
-    func insert(contentsOf items: [BData]) {
+    public func insert(contentsOf items: [BData]) {
         items.forEach { insert($0) }
     }
     
     @discardableResult
-    func remove(byID id: BData.Comp) -> BData? {
+    public func remove(byID id: BData.Comp) -> BData? {
         guard let index = getIndex(byID: id) else { return nil }
         return storedData.remove(at: index)
     }
     
     @discardableResult
-    func remove(item: BData) -> BData? { remove(byID: item.id) }
+    public func remove(item: BData) -> BData? { remove(byID: item.id) }
     
-    func contains(item: BData) -> Bool { return getIndex(byID: item.id) != nil }
+    public func contains(item: BData) -> Bool { return getIndex(byID: item.id) != nil }
     
-    func contains(where handler: (BData) -> Bool) -> Bool {
+    public func contains(where handler: (BData) -> Bool) -> Bool {
         return storedData.contains(where: handler)
     }
     
@@ -102,29 +108,4 @@ public class BArray<BData: BArrayData> {
 public protocol BArrayData {
     associatedtype Comp: Comparable
     var id: Comp { get }
-}
-
-extension Array {
-    public mutating func insertOrAppend(_ newItem: Element, at i: Int) {
-        guard i < count else {
-            append(newItem)
-            return
-        }
-        guard i >= 0 else {
-            insert(newItem, at: 0)
-            return
-        }
-        insert(newItem, at: i)
-    }
-}
-
-extension Array where Element: Comparable {
-    func isSorted(isOrderedBefore: (Element, Element) -> Bool = { $0 < $1 }) -> Bool {
-        for i in 1..<self.count {
-            if !isOrderedBefore(self[i-1], self[i]) {
-                return false
-            }
-        }
-        return true
-    }
 }
